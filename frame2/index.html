@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1920,height=1080">
+<title>ACR Store Screen Frame v2</title>
+<!--
+  ACR Supply store TV frame, v2 "touch up" (Nov 16, 2026).
+  Full-screen bottom layer in TPM. TPM's Zone 1 slideshow (x -6..1528, y 46..880)
+  and the Screenfeed sports zone (x 1528..1910, y 392..1074) sit on top of it.
+  Edit the CONFIG block and push to update every store.
+-->
+<style>
+@font-face{font-family:Alpino;src:url(assets/Alpino-Bold.woff2) format("woff2");font-weight:700;font-display:block}
+@font-face{font-family:Alpino;src:url(assets/Alpino-Black.woff2) format("woff2");font-weight:900;font-display:block}
+@font-face{font-family:Expose;src:url(assets/Expose-Bold.woff2) format("woff2");font-weight:700;font-display:block}
+html,body{margin:0;padding:0;background:#071a30;overflow:hidden}
+#stage{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;overflow:hidden;
+  background:#071a30 url(assets/background-autumn-still.png) 0 0/1920px 1080px no-repeat}
+#bg{position:absolute;left:0;top:0;width:1920px;height:1080px}
+/* calm the background slightly so the content zones lead */
+#shade{position:absolute;inset:0;background:
+  radial-gradient(1300px 760px at 760px 470px,rgba(4,18,36,0) 55%,rgba(4,18,36,.35) 100%),
+  linear-gradient(180deg,rgba(4,18,36,.10),rgba(4,18,36,.25))}
+/* soft lift behind the TPM zones */
+.lift{position:absolute;border-radius:14px;box-shadow:0 18px 44px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.06)}
+#liftMain{left:-6px;top:46px;width:1534px;height:834px;border-radius:0 14px 14px 0}
+#liftSports{left:1528px;top:392px;width:382px;height:682px}
+/* top right card */
+#card{position:absolute;left:1528px;top:96px;width:382px;height:280px;border-radius:14px;overflow:hidden;
+  background:url(assets/thank-you-card-still.png) 0 0/382px 280px;
+  box-shadow:0 18px 44px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.10)}
+#card img{width:382px;height:280px;display:block}
+/* top strip: date and time, right aligned over the card column */
+#clock{position:absolute;left:1528px;top:46px;width:382px;height:42px;display:flex;align-items:center;justify-content:space-between;
+  font-family:Expose;font-weight:700;font-size:28px;letter-spacing:1px;color:#fff;text-transform:uppercase}
+#clock .d{color:#BFD7EE}
+#clock span{text-shadow:0 2px 8px rgba(0,0,0,.7)}
+/* ticker bar */
+#bar{position:absolute;left:330px;top:966px;width:1188px;height:84px;border-radius:14px;overflow:hidden;
+  background:linear-gradient(180deg,rgba(10,40,74,.92),rgba(5,24,46,.94));
+  box-shadow:0 14px 36px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.12)}
+#bar:before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:#006EB7}
+#tag{position:absolute;left:22px;top:18px;height:48px;padding:0 18px;border-radius:9px;background:#fff;
+  display:flex;align-items:center;font-family:Expose;font-weight:700;font-size:28px;letter-spacing:1px;color:#006EB7}
+#tick{position:absolute;left:24px;right:0;top:0;height:84px;overflow:hidden;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 40px,#000 calc(100% - 40px),transparent 100%);
+          mask-image:linear-gradient(90deg,transparent 0,#000 40px,#000 calc(100% - 40px),transparent 100%)}
+#crawl{position:absolute;left:0;top:0;height:84px;display:flex;align-items:center;white-space:nowrap;will-change:transform}
+#crawl .m{font-family:Alpino;font-weight:700;font-size:38px;color:#fff;letter-spacing:.3px}
+#crawl .s{display:inline-block;width:12px;height:12px;border-radius:50%;background:#5FB0EA;margin:0 46px;flex:none}
+</style>
+</head>
+<body>
+<div id="stage">
+  <img id="bg" src="assets/background-autumn.gif" alt="">
+  <div class="lift" id="liftMain"></div>
+  <div class="lift" id="liftSports"></div>
+  <div id="clock"><span class="d" id="date"></span><span id="time"></span></div>
+  <div id="card"><img src="assets/thank-you-card.gif" alt=""></div>
+  <div id="bar"><div id="tick"><div id="crawl"></div></div></div>
+</div>
+<script>
+/* ===== CONFIG ===== */
+var TICKER = [
+  "Thank you for choosing ACR Supply",
+  "We appreciate your business",
+  "8 stores across North Carolina, one team behind you",
+  "Get deals first: ask the counter about ACR text alerts",
+  "Find us on your feed: search ACR Supply",
+  {text:"Deer contest: show us your buck at the counter or message us on social", until:"2027-01-01"}
+];
+var SPEED = 70;          /* pixels per second */
+var RELOAD_HOURS = 6;
+/* ================== */
+(function(){
+  var stage=document.getElementById('stage');
+  function fit(){var s=Math.min(innerWidth/1920,innerHeight/1080);stage.style.transform='scale('+s+')';}
+  addEventListener('resize',fit);fit();
+  document.getElementById('bg').onerror=function(){this.style.display='none'};
+
+  var D=['SUN','MON','TUE','WED','THU','FRI','SAT'],M=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  function clock(){var n=new Date(),h=n.getHours(),m=n.getMinutes(),ap=h<12?'AM':'PM';h=h%12||12;
+    document.getElementById('time').textContent=h+':'+(m<10?'0':'')+m+' '+ap;
+    document.getElementById('date').textContent=D[n.getDay()]+' '+M[n.getMonth()]+' '+n.getDate();}
+  clock();setInterval(clock,10000);
+
+  var today=new Date();today.setHours(0,0,0,0);
+  var lines=TICKER.filter(function(t){if(typeof t==='string')return true;
+    if(t.from&&today<new Date(t.from+'T00:00:00'))return false;
+    if(t.until&&today>=new Date(t.until+'T00:00:00'))return false;return true;})
+    .map(function(t){return typeof t==='string'?t:t.text});
+  var crawl=document.getElementById('crawl');
+  /* two copies so the loop is seamless */
+  for(var k=0;k<2;k++)lines.forEach(function(l){
+    var s=document.createElement('span');s.className='m';s.textContent=l;crawl.appendChild(s);
+    var d=document.createElement('span');d.className='s';crawl.appendChild(d);});
+  var x=0,last=null,half=0;
+  function measure(){half=crawl.scrollWidth/2;}
+  (document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(measure);measure();
+  function step(t){if(last!==null){x-=SPEED*(t-last)/1000;if(half&&x<=-half)x+=half;}last=t;
+    crawl.style.transform='translate3d('+x.toFixed(1)+'px,0,0)';requestAnimationFrame(step);}
+  requestAnimationFrame(step);
+  setTimeout(function(){location.reload();},RELOAD_HOURS*3600*1000);
+})();
+</script>
+</body>
+</html>
