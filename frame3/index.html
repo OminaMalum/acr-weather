@@ -16,8 +16,19 @@
 @font-face{font-family:Expose;src:url(assets/Expose-Bold.woff2) format("woff2");font-weight:700;font-display:block}
 html,body{margin:0;padding:0;background:#071a30;overflow:hidden}
 #stage{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;overflow:hidden;
-  background:#071a30 url(assets/background-autumn-still.png) 0 0/1920px 1080px no-repeat}
-#bg{position:absolute;left:0;top:0;width:1920px;height:1080px}
+  background:radial-gradient(1400px 900px at 18% 8%,#0d5fa3 0%,rgba(13,95,163,0) 60%),
+             radial-gradient(1100px 800px at 95% 100%,#0a4a85 0%,rgba(10,74,133,0) 60%),
+             linear-gradient(160deg,#06213f 0%,#041732 55%,#020d1f 100%)}
+/* slow liquid light blobs */
+.blob{position:absolute;border-radius:50%;filter:blur(90px);opacity:.55;will-change:transform}
+#b1{width:900px;height:700px;left:-200px;top:-200px;background:#1a7fd0;animation:d1 38s ease-in-out infinite alternate}
+#b2{width:800px;height:800px;left:1200px;top:500px;background:#0b5fb0;animation:d2 46s ease-in-out infinite alternate}
+#b3{width:600px;height:500px;left:600px;top:700px;background:#2a8fe0;opacity:.30;animation:d3 52s ease-in-out infinite alternate}
+@keyframes d1{to{transform:translate(260px,160px)}}
+@keyframes d2{to{transform:translate(-300px,-180px)}}
+@keyframes d3{to{transform:translate(220px,-120px)}}
+#grain{position:absolute;inset:0;opacity:.06;background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.5) 0 1px,transparent 1px 3px)}
+#logo{position:absolute;left:36px;top:968px;width:270px;filter:drop-shadow(0 4px 14px rgba(0,0,0,.45))}
 /* ===== v3 liquid glass ===== */
 .glass{position:absolute;border-radius:24px;
   background:linear-gradient(160deg,rgba(255,255,255,.20) 0%,rgba(255,255,255,.06) 38%,rgba(120,190,255,.07) 100%);
@@ -61,7 +72,8 @@ html,body{margin:0;padding:0;background:#071a30;overflow:hidden}
 </head>
 <body>
 <div id="stage">
-  <img id="bg" src="assets/background-autumn.gif" alt="">
+  <div class="blob" id="b1"></div><div class="blob" id="b2"></div><div class="blob" id="b3"></div>
+  <img id="logo" src="assets/acr-logo-white.png" alt="ACR Supply Co.">
   <div class="glass" id="bzMain"></div>
   <div class="glass" id="bzSports"></div>
   <div class="glass" id="cardwrap"><div id="card"><img src="assets/thank-you-card.gif" alt=""></div></div>
@@ -85,7 +97,6 @@ var RELOAD_HOURS = 6;
   var stage=document.getElementById('stage');
   function fit(){var s=Math.min(innerWidth/1920,innerHeight/1080);stage.style.transform='scale('+s+')';}
   addEventListener('resize',fit);fit();
-  document.getElementById('bg').onerror=function(){this.style.display='none'};
 
   var D=['SUN','MON','TUE','WED','THU','FRI','SAT'],M=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
   function clock(){var n=new Date(),h=n.getHours(),m=n.getMinutes(),ap=h<12?'AM':'PM';h=h%12||12;
