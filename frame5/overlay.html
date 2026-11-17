@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1920,height=1080">
+<title>ACR Glass Corner Mask</title>
+<!--
+  Top layer in TPM, full screen 0,0 1920x1080, transparent everywhere except the glass rims.
+  It rounds the square corners of the TPM zones that sit under it:
+  Zone 1 x32 y32 1440x810, sports x1504 y408 384x640.
+-->
+<style>
+html,body{margin:0;padding:0;background:transparent!important;overflow:hidden}
+#stage{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0}
+svg{position:absolute;left:0;top:0;width:1920px;height:1080px;overflow:visible}
+</style>
+</head>
+<body>
+<div id="stage">
+<svg viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="rim" x1="0" y1="0" x2="0.35" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset=".5" stop-color="#e4f1fb"/>
+      <stop offset="1" stop-color="#cfe6f7"/>
+    </linearGradient>
+    <filter id="glow" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="10" result="b"/>
+      <feFlood flood-color="#ffffff" flood-opacity=".7"/><feComposite in2="b" operator="in" result="g"/>
+      <feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <g id="rims" filter="url(#glow)"></g>
+  <g id="lines"></g>
+</svg>
+</div>
+<script>
+/* zone = the TPM zone rect; bezel = how far the rim reaches outside it; r = inner corner radius */
+var ZONES=[{x:32,y:32,w:1440,h:810},{x:1504,y:408,w:384,h:640}], BEZEL=10, R=20, RO=26;
+function rr(x,y,w,h,r){return 'M'+(x+r)+','+y+'H'+(x+w-r)+'A'+r+','+r+' 0 0 1 '+(x+w)+','+(y+r)+'V'+(y+h-r)+'A'+r+','+r+' 0 0 1 '+(x+w-r)+','+(y+h)
+  +'H'+(x+r)+'A'+r+','+r+' 0 0 1 '+x+','+(y+h-r)+'V'+(y+r)+'A'+r+','+r+' 0 0 1 '+(x+r)+','+y+'Z';}
+var NS='http://www.w3.org/2000/svg',rims=document.getElementById('rims'),lines=document.getElementById('lines');
+ZONES.forEach(function(z){
+  var p=document.createElementNS(NS,'path');
+  p.setAttribute('d',rr(z.x-BEZEL,z.y-BEZEL,z.w+2*BEZEL,z.h+2*BEZEL,RO)+rr(z.x,z.y,z.w,z.h,R));
+  p.setAttribute('fill-rule','evenodd');p.setAttribute('fill','url(#rim)');rims.appendChild(p);
+  /* thin shadow line where the screen meets the glass, so it reads as set into the frame */
+  var q=document.createElementNS(NS,'path');q.setAttribute('d',rr(z.x+.75,z.y+.75,z.w-1.5,z.h-1.5,R-.75));
+  q.setAttribute('fill','none');q.setAttribute('stroke','rgba(0,40,80,.35)');q.setAttribute('stroke-width','1.5');lines.appendChild(q);
+  var o=document.createElementNS(NS,'path');o.setAttribute('d',rr(z.x-BEZEL+.75,z.y-BEZEL+.75,z.w+2*BEZEL-1.5,z.h+2*BEZEL-1.5,RO-.75));
+  o.setAttribute('fill','none');o.setAttribute('stroke','#fff');o.setAttribute('stroke-width','1.5');lines.appendChild(o);
+});
+var st=document.getElementById('stage');
+function fit(){st.style.transform='scale('+Math.min(innerWidth/1920,innerHeight/1080)+')';}
+addEventListener('resize',fit);fit();
+</script>
+</body>
+</html>
