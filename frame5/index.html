@@ -80,18 +80,21 @@ html,body{margin:0;padding:0;background:#00467A;overflow:hidden}
 /* one message at a time */
 #crawl{transition:transform .9s cubic-bezier(.2,.7,.2,1),opacity .6s ease}
 #crawl.out{opacity:0}
-#clock,#bar,#plate{background:linear-gradient(180deg,#ffffff,#f1f7fd)!important;
-  box-shadow:inset 0 0 0 1.5px #fff,0 0 30px rgba(255,255,255,.65),0 0 80px rgba(255,255,255,.3),0 16px 40px rgba(0,30,70,.35)!important}
-#plate{position:absolute;left:22px;top:910px;width:304px;height:108px;border-radius:30px}
-#logo{left:44px!important;top:928px!important;width:260px!important;filter:none!important}
-/* orange contrast touches */
-#stage{--accent:#F7941D!important;--accent-glow:rgba(247,148,29,.7)!important}
-#clock .d{color:#F7941D!important}
-#crawl .m{color:#00467A!important}
-.glass:before{display:none}
-#bar:before,#clock:before{display:block!important;content:"";position:absolute;left:0;top:22px;bottom:22px;width:6px;border-radius:0 6px 6px 0;background:#F7941D;box-shadow:0 0 12px rgba(247,148,29,.6)}
-#bar:before{left:0;top:24px;bottom:24px}
-#clock:before{top:16px;bottom:16px}
+/* v5c: bottom row aligned, glass pills, readable orange */
+#plate{position:absolute;left:22px;top:903px;width:304px;height:104px;border-radius:30px;
+  background:linear-gradient(180deg,#ffffff,#eef6fd)!important;
+  box-shadow:inset 0 0 0 1.5px #fff,0 0 26px rgba(255,255,255,.55),0 16px 40px rgba(0,30,70,.35)!important}
+#logo{left:46px!important;top:921px!important;width:256px!important;filter:none!important}
+#bar{top:903px!important;height:104px!important;border-radius:30px!important;
+  background:linear-gradient(160deg,rgba(255,255,255,.30),rgba(255,255,255,.10) 50%,rgba(255,255,255,.16)),rgba(0,50,95,.55)!important}
+#tick,#crawl{height:104px!important}
+#crawl .m{color:#fff!important;font-size:40px!important;text-shadow:0 2px 12px rgba(0,30,70,.5)}
+#bar .glow{left:220px!important;right:220px!important;bottom:14px!important;height:4px!important;opacity:1;
+  background:linear-gradient(90deg,rgba(255,165,61,0),#FFA53D 25%,#FFA53D 75%,rgba(255,165,61,0))!important;box-shadow:0 0 16px rgba(255,165,61,.9)!important}
+#bar .sheen{display:none}
+#clock{background:linear-gradient(160deg,rgba(255,255,255,.30),rgba(255,255,255,.10) 50%,rgba(255,255,255,.16)),rgba(0,50,95,.55)!important;color:#fff!important}
+#clock .d{color:#FFB257!important}
+.glass:before,#bar:before,#clock:before{display:none!important}
 </style>
 </head>
 <body>
