@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1920,height=1080">
+<title>ACR Store Screen Frame v5 White Glow</title>
+<!--
+  ACR Supply store TV frame, v2 "touch up" (Nov 16, 2026).
+  Full-screen bottom layer in TPM. TPM zones for this layout: Zone 1 x32 y32 1440x810; card x1504 y100 384x280; sports x1504 y408 384x640
+  and the Screenfeed sports zone (x 1528..1910, y 392..1074) sit on top of it.
+  Edit the CONFIG block and push to update every store.
+-->
+<style>
+@font-face{font-family:Alpino;src:url(assets/Alpino-Bold.woff2) format("woff2");font-weight:700;font-display:block}
+@font-face{font-family:Alpino;src:url(assets/Alpino-Black.woff2) format("woff2");font-weight:900;font-display:block}
+@font-face{font-family:Expose;src:url(assets/Expose-Bold.woff2) format("woff2");font-weight:700;font-display:block}
+#stage{--accent:#006EB7;--accent-glow:rgba(0,110,183,.5)}
+#stage.thanks{--accent:#F7941D;--accent-glow:rgba(247,148,29,.65)}
+html,body{margin:0;padding:0;background:#eef4fa;overflow:hidden}
+#stage{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;overflow:hidden;
+  background:radial-gradient(1300px 900px at 15% 5%,#ffffff 0%,rgba(255,255,255,0) 60%),
+             radial-gradient(1100px 800px at 95% 100%,#d6e8f8 0%,rgba(214,232,248,0) 65%),
+             linear-gradient(160deg,#f7fbff 0%,#e8f1fa 55%,#d9e8f6 100%)}
+/* slow liquid light blobs */
+.blob{position:absolute;border-radius:50%;filter:blur(90px);opacity:.55;will-change:transform}
+#b1{width:900px;height:700px;left:-200px;top:-200px;background:#ffffff;opacity:.9;animation:d1 38s ease-in-out infinite alternate}
+#b2{width:800px;height:800px;left:1200px;top:500px;background:#b9d9f5;opacity:.6;animation:d2 46s ease-in-out infinite alternate}
+#b3{width:700px;height:420px;left:520px;top:760px;background:#ffffff;opacity:.8;animation:d3 52s ease-in-out infinite alternate}
+@keyframes d1{to{transform:translate(260px,160px)}}
+@keyframes d2{to{transform:translate(-300px,-180px)}}
+@keyframes d3{to{transform:translate(220px,-120px)}}
+#grain{position:absolute;inset:0;opacity:.06;background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.5) 0 1px,transparent 1px 3px)}
+#logo{position:absolute;left:32px;top:922px;width:280px;filter:drop-shadow(0 0 18px rgba(255,255,255,.95))}
+/* ===== v3 liquid glass ===== */
+.glass{position:absolute;border-radius:24px;
+  background:linear-gradient(160deg,rgba(255,255,255,.85) 0%,rgba(255,255,255,.55) 45%,rgba(230,242,252,.6) 100%);
+  box-shadow:
+    inset 0 2px 0 rgba(255,255,255,1),          /* top highlight */
+    inset 0 0 0 1.5px rgba(255,255,255,.9),     /* glass rim */
+    0 0 40px rgba(255,255,255,1),               /* white glow */
+    0 0 90px rgba(255,255,255,.8),
+    0 18px 48px rgba(20,60,110,.18)}
+.glass:after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:radial-gradient(120% 60% at 20% 0%,rgba(255,255,255,.5),rgba(255,255,255,0) 60%)}
+/* bezels: TPM zones sit inside these like screens in glass */
+#bzMain{left:22px;top:22px;width:1460px;height:830px;border-radius:26px}
+#bzSports{left:1494px;top:398px;width:404px;height:660px;border-radius:26px}
+/* top right card, rounded glass edge */
+#cardwrap{position:absolute;left:1494px;top:94px;width:404px;height:292px;border-radius:26px}
+#card{position:absolute;left:10px;top:6px;width:384px;height:280px;border-radius:18px;overflow:hidden;
+  background:url(assets/thank-you-card-still.png) 0 0/382px 280px}
+#card img{width:384px;height:280px;display:block}
+/* clock pill */
+#clock{position:absolute;left:1494px;top:22px;width:404px;height:58px;border-radius:29px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;box-sizing:border-box;font-family:Expose;font-weight:700;font-size:28px;letter-spacing:1px;color:#0B2A4A;text-transform:uppercase}
+#clock .d{color:var(--accent)}
+/* ticker bar */
+#bar{position:absolute;left:350px;top:918px;width:1132px;height:92px;border-radius:46px;overflow:hidden;
+  background:linear-gradient(160deg,rgba(255,255,255,.95) 0%,rgba(255,255,255,.75) 50%,rgba(232,243,252,.85) 100%)}
+#bar .glow{position:absolute;left:90px;right:90px;bottom:7px;height:3px;border-radius:2px;
+  background:linear-gradient(90deg,rgba(95,176,234,0),var(--accent) 50%,rgba(95,176,234,0));
+  box-shadow:0 0 16px var(--accent-glow)}
+#bar .sheen{position:absolute;top:0;bottom:0;width:220px;left:-260px;
+  background:linear-gradient(100deg,rgba(255,255,255,0),rgba(255,255,255,.9),rgba(255,255,255,0));
+  animation:sheen 14s linear infinite}
+@keyframes sheen{0%{transform:translateX(0)}22%{transform:translateX(1700px)}100%{transform:translateX(1700px)}}
+#tick{position:absolute;left:34px;right:34px;top:0;height:92px;overflow:hidden;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 50px,#000 calc(100% - 50px),transparent 100%);
+          mask-image:linear-gradient(90deg,transparent 0,#000 50px,#000 calc(100% - 50px),transparent 100%)}
+#crawl{position:absolute;left:0;top:0;height:92px;display:flex;align-items:center;white-space:nowrap;will-change:transform}
+#crawl .m{font-family:Alpino;font-weight:700;font-size:38px;color:#0B2A4A;letter-spacing:.3px}
+#crawl .s{display:inline-block;width:10px;height:10px;border-radius:50%;background:#006EB7;margin:0 46px;flex:none}
+#stage.thanks #b3{background:#FFBE7A;opacity:.7}
+#stage.thanks #b1{background:#FFF1E2}
+#stage.thanks .glass{box-shadow:inset 0 2px 0 #fff,inset 0 0 0 1.5px rgba(255,255,255,.9),0 0 40px #fff,0 0 70px rgba(247,148,29,.32),0 18px 48px rgba(20,60,110,.16)}
+/* orange hairline along the top of each glass panel */
+.glass:before{content:"";position:absolute;left:36px;right:36px;top:0;height:3px;border-radius:3px;
+  background:linear-gradient(90deg,rgba(0,0,0,0),var(--accent) 50%,rgba(0,0,0,0));opacity:1;box-shadow:0 0 10px var(--accent-glow)}
+/* one message at a time */
+#crawl{transition:transform .9s cubic-bezier(.2,.7,.2,1),opacity .6s ease}
+#crawl.out{opacity:0}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="blob" id="b1"></div><div class="blob" id="b2"></div><div class="blob" id="b3"></div>
+  <img id="logo" src="assets/acr-logo-color.png" alt="ACR Supply Co.">
+  <div class="glass" id="bzMain"></div>
+  <div class="glass" id="bzSports"></div>
+  <div class="glass" id="cardwrap"><div id="card"><img src="assets/thank-you-card.gif" alt=""></div></div>
+  <div class="glass" id="clock"><span class="d" id="date"></span><span id="time"></span></div>
+  <div class="glass" id="bar"><div class="sheen"></div><div id="tick"><div id="crawl"></div></div><div class="glow"></div></div>
+</div>
+<script>
+/* ===== CONFIG ===== */
+var TICKER = [
+  "Thank You for Choosing ACR Supply",
+  "We Appreciate Your Business",
+  "8 Stores Across North Carolina, One Team Behind You",
+  "Get Deals First: Ask the Counter About ACR Text Alerts",
+  "Find Us on Your Feed: Search ACR Supply",
+  {text:"Deer Contest: Show Us Your Buck at the Counter or Message Us on Social", until:"2027-01-01"}
+];
+var RELOAD_HOURS = 6;
+/* ================== */
+(function(){
+  var stage=document.getElementById('stage');
+  function fit(){var s=Math.min(innerWidth/1920,innerHeight/1080);stage.style.transform='scale('+s+')';}
+  addEventListener('resize',fit);fit();
+
+  var D=['SUN','MON','TUE','WED','THU','FRI','SAT'],M=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  function clock(){var n=new Date(),h=n.getHours(),m=n.getMinutes(),ap=h<12?'AM':'PM';h=h%12||12;
+    document.getElementById('time').textContent=h+':'+(m<10?'0':'')+m+' '+ap;
+    document.getElementById('date').textContent=D[n.getDay()]+' '+M[n.getMonth()]+' '+n.getDate();}
+  clock();setInterval(clock,10000);
+
+  var today=new Date();today.setHours(0,0,0,0);
+  var lines=TICKER.filter(function(t){if(typeof t==='string')return true;
+    if(t.from&&today<new Date(t.from+'T00:00:00'))return false;
+    if(t.until&&today>=new Date(t.until+'T00:00:00'))return false;return true;})
+    .map(function(t){return typeof t==='string'?t:t.text});
+  var crawl=document.getElementById('crawl'), box=document.getElementById('tick');
+  var HOLD=7000, CRAWL=70, i=0;
+  function show(){
+    var l=lines[i%lines.length]; i++;
+    crawl.className='out'; crawl.style.transition='none';
+    crawl.innerHTML='<span class="m"></span>'; crawl.firstChild.textContent=l;
+    var bw=box.clientWidth, w=crawl.scrollWidth, start=Math.max(0,(bw-w)/2);
+    crawl.style.transform='translate3d('+start+'px,26px,0)';
+    void crawl.offsetWidth;
+    crawl.style.transition=''; crawl.className='';
+    crawl.style.transform='translate3d('+start+'px,0,0)';
+    var extra=w>bw-60? (w-(bw-60)) : 0;
+    var t=HOLD;
+    if(extra){ /* long line: read the start, then glide to the end */
+      setTimeout(function(){crawl.style.transition='transform '+(extra/CRAWL)+'s linear';
+        crawl.style.transform='translate3d('+(-extra-30)+'px,0,0)';},2500);
+      t=2500+extra/CRAWL*1000+3000;
+    }
+    setTimeout(function(){crawl.style.transition='';crawl.className='out';
+      crawl.style.transform=crawl.style.transform.replace(/,\s*0px,|,0,/,',-26px,');},t);
+    setTimeout(show,t+700);
+  }
+  (document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(show);
+
+  var ACCENT_THANKS_UNTIL='2026-11-27';  /* orange Thanksgiving accents through Thanksgiving Day */
+  if(today<new Date(ACCENT_THANKS_UNTIL+'T23:59:59'))document.getElementById('stage').classList.add('thanks');
+  setTimeout(function(){location.reload();},RELOAD_HOURS*3600*1000);
+})();
+</script>
+</body>
+</html>
