@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ACR Live Contractor Forecast</title>
+<style>
+@font-face{font-family:Alpino;src:url(assets/Alpino-Black.woff2) format("woff2");font-weight:900}
+@font-face{font-family:Alpino;src:url(assets/Alpino-Bold.woff2) format("woff2");font-weight:700}
+@font-face{font-family:Expose;src:url(assets/Expose-Bold.woff2) format("woff2");font-weight:700}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#004E86}
+body{background:radial-gradient(120vw 100vh at 70% 35%,#0A7FCC 0%,#006EB7 45%,#004E86 100%)}
+#stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform-origin:center center;
+  font-family:Alpino;color:#fff}
+.x{font-family:Expose;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+#logo{position:absolute;left:80px;top:60px;height:100px}
+#kicker{position:absolute;left:80px;top:205px;font-size:46px}
+#head{position:absolute;left:80px;top:275px;width:830px;font-weight:900;font-size:82px;line-height:1.04;white-space:pre-line;letter-spacing:-1.5px}
+#sub{position:absolute;left:80px;top:480px;width:810px;font-weight:700;font-size:40px;line-height:1.2}
+.strip{position:absolute;left:80px;width:810px;top:600px;display:flex;background:#fff;border-radius:20px;color:#0B2A4A;padding:18px 4px}
+.dd{flex:1;text-align:center;display:flex;flex-direction:column;gap:2px}
+.dd b{font-size:38px}.dd .h{font-weight:900;font-size:52px}.dd .l{font-weight:900;font-size:46px;color:#006EB7}
+#striplabel{position:absolute;left:80px;top:860px;font-weight:700;font-size:34px;opacity:.9}
+#foot{position:absolute;left:80px;bottom:56px;font-size:34px;font-weight:700}
+#maphead{position:absolute;left:960px;top:70px;font-size:42px}
+#map{position:absolute;left:900px;top:140px}
+.chipbg{fill:#fff}
+.cn{font:700 34px Alpino;fill:#0B2A4A}
+.ct{font:900 56px Alpino;fill:#006EB7}
+.cl{font:700 34px Alpino;fill:#0B2A4A}
+.dim .chipbg{fill:#BFDCF2}.dim text{opacity:.75}.dim line,.dim circle{opacity:.35}
+.pick .chipbg{stroke:#0B2A4A;stroke-width:6}
+</style></head>
+<body>
+<div id="stage">
+  <img id="logo" src="assets/acr-logo-white.png" alt="ACR Supply Co.">
+  <div id="kicker" class="x">Live Contractor Forecast</div>
+  <div id="head">Getting the latest forecast</div>
+  <div id="sub"></div>
+  <div class="strip" id="strip"></div>
+  <div id="striplabel"></div>
+  <div id="foot">Source: National Weather Service</div>
+  <div id="maphead" class="x">Right now and tonight's low, by store</div>
+  <div id="map">%%MAP%%</div>
+</div>
+<script>
+(function(){
+var STORES = %%STORES%%;
+var REFRESH_MIN = 15, RELOAD_HOURS = 6, CACHE_KEY = "acrLiveWx1";
+var TZ = "America/New_York";
+var params = new URLSearchParams(location.search);
+var pick = (params.get("store") || "").toLowerCase().replace(/[^a-z]/g, "");
+var picked = STORES.filter(function(s){ return s.key === pick; })[0] || null;
+
+function fit(){
+  var s = Math.min(innerWidth / 1920, innerHeight / 1080);
+  document.getElementById("stage").style.transform = "translate(-50%,-50%) scale(" + s + ")";
+}
+addEventListener("resize", fit); fit();
+
+function deg(n){ return Math.round(n) + "°"; }
+function $(id){ return document.getElementById(id); }
+function esc(t){ return String(t).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+function fmtTime(d){ return d.toLocaleTimeString("en-US", {timeZone: TZ, hour: "numeric", minute: "2-digit"}); }
+function dateKey(iso){ return new Date(iso).toLocaleDateString("en-CA", {timeZone: TZ}); }
+function dow(iso){ return new Date(iso).toLocaleDateString("en-US", {timeZone: TZ, weekday: "short"}).toUpperCase(); }
+
+function getJSON(url, tries){
+  tries = tries || 3;
+  return fetch(url, {headers: {"Accept": "application/geo+json"}, cache: "no-store"}).then(function(r){
+    if (!r.ok) throw new Error(r.status);
+    return r.json();
+  }).catch(function(e){
+    if (tries <= 1) throw e;
+    return new Promise(function(res){ setTimeout(res, 2500); }).then(function(){ return getJSON(url, tries - 1); });
+  });
+}
+
+function loadStore(s){
+  var base = "https://api.weather.gov/gridpoints/" + s.office + "/" + s.x + "," + s.y;
+  return Promise.all([getJSON(base + "/forecast"), getJSON(base + "/forecast/hourly")]).then(function(r){
+    var periods = r[0].properties.periods, hourly = r[1].properties.periods;
+    var tNow = Date.now();
+    var nowP = hourly.filter(function(p){ return Date.parse(p.startTime) <= tNow && Date.parse(p.endTime) > tNow; })[0]
+      || hourly.filter(function(p){ return Date.parse(p.endTime) > tNow; })[0] || hourly[0];
+    periods = periods.filter(function(p){ return Date.parse(p.endTime) > tNow; });
+    var tonight = periods.filter(function(p){ return !p.isDaytime; })[0];
+    var pop = function(p){ return (p.probabilityOfPrecipitation && p.probabilityOfPrecipitation.value) || 0; };
+    var days = {};
+    periods.forEach(function(p){
+      var k = dateKey(p.startTime); days[k] = days[k] || {date: k, dow: dow(p.startTime)};
+      if (p.isDaytime) { days[k].high = p.temperature; days[k].end = Date.parse(p.endTime); } else days[k].low = p.temperature;
+    });
+    return {
+      now: nowP.temperature, sky: nowP.shortForecast,
+      low: tonight ? tonight.temperature : null,
+      pop12: Math.max(pop(periods[0]), periods[1] ? pop(periods[1]) : 0),
+      firstIsDay: periods[0].isDaytime,
+      days: Object.keys(days).sort().map(function(k){ return days[k]; }),
+      at: Date.now()
+    };
+  });
+}
+
+var data = {};
+try { data = JSON.parse(localStorage.getItem(CACHE_KEY) || "{}") || {}; } catch (e) { data = {}; }
+
+function render(){
+  var have = STORES.filter(function(s){ return data[s.key]; });
+  STORES.forEach(function(s){
+    var d = data[s.key];
+    var nowEl = document.querySelector('[data-now="' + s.key + '"]');
+    var lowEl = document.querySelector('[data-low="' + s.key + '"]');
+    nowEl.textContent = d ? deg(d.now) : "--";
+    lowEl.textContent = d && d.low != null ? "low " + deg(d.low) : "";
+    var g = $("s-" + s.key);
+    g.setAttribute("class", "s" + (picked ? (picked.key === s.key ? " pick" : " dim") : ""));
+  });
+  if (!have.length) return;
+  var newest = Math.max.apply(null, have.map(function(s){ return data[s.key].at; }));
+  $("foot").textContent = "Source: National Weather Service · Updated " + fmtTime(new Date(newest));
+
+  var dayList;
+  if (picked && data[picked.key]) {
+    var d = data[picked.key];
+    $("kicker").textContent = "Live Forecast · " + picked.name;
+    $("head").innerHTML = "Now " + deg(d.now) + "." + (d.low != null ? "<br>Tonight " + deg(d.low) + "." : "");
+    $("sub").textContent = d.sky;
+    dayList = d.days.filter(function(x){ return x.high != null && x.low != null && x.end > Date.now(); }).slice(0, 5)
+      .map(function(x){ return {dow: x.dow, h: x.high, l: x.low}; });
+    $("striplabel").textContent = "Next 5 days in " + picked.name + ": high and low";
+  } else {
+    $("kicker").textContent = "Live Contractor Forecast";
+    var lows = have.filter(function(s){ return data[s.key].low != null; })
+      .map(function(s){ return {name: s.name, t: data[s.key].low}; }).sort(function(a, b){ return a.t - b.t; });
+    var freeze = lows.filter(function(x){ return x.t <= 32; });
+    var rain = have.filter(function(s){ return data[s.key].pop12 >= 50; });
+    var when = data[have[0].key].firstIsDay ? "today" : "tonight";
+    var head, sub = "";
+    if (freeze.length) {
+      head = freeze.length === 1 ? "Freezing tonight\nin " + freeze[0].name + "." :
+             freeze.length === have.length ? "Freezing tonight\nat all " + have.length + " stores." :
+             "Freezing tonight\nat " + freeze.length + " stores.";
+      sub = "Coldest: " + lows[0].name + " " + deg(lows[0].t) + ". Expect no-heat calls in the morning.";
+    } else if (rain.length) {
+      head = rain.length === have.length ? "Rain likely " + when + "\nat all " + have.length + " stores." :
+             "Rain likely " + when + "\nat " + rain.length + " stores.";
+      sub = "Lows tonight " + deg(lows[0].t) + " to " + deg(lows[lows.length - 1].t) + ".";
+    } else if (lows.length) {
+      head = "Lows tonight\n" + deg(lows[0].t) + " to " + deg(lows[lows.length - 1].t) + ".";
+      var nows = have.map(function(s){ return data[s.key].now; });
+      sub = "Right now " + deg(Math.min.apply(null, nows)) + " to " + deg(Math.max.apply(null, nows)) + " across our stores.";
+    }
+    $("head").textContent = head || "";
+    $("sub").textContent = sub;
+    var byDate = {};
+    have.forEach(function(s){ data[s.key].days.forEach(function(x){
+      if (x.high == null || x.low == null || !(x.end > Date.now())) return;
+      var b = byDate[x.date] = byDate[x.date] || {dow: x.dow, hs: [], ls: []}; b.hs.push(x.high); b.ls.push(x.low);
+    }); });
+    var avg = function(a){ return a.reduce(function(p, c){ return p + c; }, 0) / a.length; };
+    dayList = Object.keys(byDate).sort().slice(0, 5).map(function(k){
+      var b = byDate[k]; return {dow: b.dow, h: avg(b.hs), l: avg(b.ls)};
+    });
+    $("striplabel").textContent = "Next 5 days, average high and low across our 8 stores";
+  }
+  $("strip").innerHTML = dayList.map(function(x){
+    return '<div class="dd"><b class="x">' + esc(x.dow) + '</b><span class="h">' + deg(x.h) + '</span><span class="l">' + deg(x.l) + "</span></div>";
+  }).join("");
+}
+
+function refresh(){
+  var jobs = STORES.map(function(s){
+    return loadStore(s).then(function(d){ data[s.key] = d; }).catch(function(){ /* keep the last good numbers */ });
+  });
+  Promise.all(jobs).then(function(){
+    try { localStorage.setItem(CACHE_KEY, JSON.stringify(data)); } catch (e) {}
+    render();
+  });
+}
+
+render();
+refresh();
+setInterval(refresh, REFRESH_MIN * 60 * 1000);
+setTimeout(function(){ location.reload(); }, RELOAD_HOURS * 3600 * 1000);
+})();
+</script>
+</body></html>
