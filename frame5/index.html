@@ -96,6 +96,33 @@ html,body{margin:0;padding:0;background:#00467A;overflow:hidden}
 #clock .d{color:#FFB257!important}
 .glass:before,#bar:before,#clock:before{display:none!important}
 #cardwrap{background:linear-gradient(170deg,#ffffff,#e4f1fb 50%,#cfe6f7)!important}
+
+/* ===== top right: Thank You card and live weather take turns ===== */
+#tyimg{position:absolute;left:0;top:0;transition:opacity .8s ease}
+#wx{position:absolute;inset:0;color:#fff;transition:opacity .8s ease;
+  background:radial-gradient(260px 200px at 85% 0%,rgba(124,196,245,.55),rgba(124,196,245,0) 70%),linear-gradient(165deg,#0b74c4 0%,#00518f 55%,#003766 100%)}
+#wx.hide,#tyimg.hide{opacity:0}
+#wxTop{position:absolute;left:22px;right:20px;top:34px;display:flex;justify-content:space-between;align-items:center}
+#wxLive{font-family:Expose;font-weight:700;font-size:18px;letter-spacing:2px;color:#FFB257}
+#wxDots i{display:inline-block;width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.35);margin-left:6px}
+#wxDots i.on{background:#fff;box-shadow:0 0 8px #fff}
+#wxStore{position:absolute;left:22px;top:18px;font-family:Alpino;font-weight:900;font-size:36px;letter-spacing:.3px}
+#wxMid{position:absolute;left:18px;right:18px;top:78px;height:104px;display:flex;align-items:center}
+#wxIcon{width:96px;height:96px;flex:none}
+#wxIcon svg{width:96px;height:96px;display:block}
+#wxTemp{margin-left:14px;font-family:Alpino;font-weight:900;font-size:96px;line-height:1;text-shadow:0 4px 20px rgba(0,30,70,.45)}
+#wxSky{position:absolute;left:22px;right:18px;top:184px;font-family:Alpino;font-weight:700;font-size:26px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#E3F1FC}
+#wxBot{position:absolute;left:0;right:0;bottom:0;height:46px;padding:0 22px;display:flex;justify-content:space-between;align-items:center;
+  background:rgba(0,30,60,.38);font-family:Expose;font-weight:700;font-size:26px;letter-spacing:1px}
+#wxBot span:first-child{color:#fff}#wxBot span:last-child{color:#FFB257}
+#wxStore,#wxMid,#wxSky,#wxBot span{transition:opacity .5s ease,transform .5s ease}
+#wx.swap #wxStore,#wx.swap #wxMid,#wx.swap #wxSky,#wx.swap #wxBot span{opacity:0;transform:translateY(8px)}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes drift{0%,100%{transform:translateX(-3px)}50%{transform:translateX(4px)}}
+@keyframes fall{0%{transform:translateY(-6px);opacity:0}30%{opacity:1}100%{transform:translateY(14px);opacity:0}}
+.sunR{transform-origin:48px 48px;animation:spin 40s linear infinite}
+.cl{animation:drift 7s ease-in-out infinite}
+.dr{animation:fall 1.4s linear infinite}
 #leaves{position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none}
 </style>
 </head>
@@ -107,7 +134,14 @@ html,body{margin:0;padding:0;background:#00467A;overflow:hidden}
   <img id="logo" src="assets/acr-logo-color.png" alt="ACR Supply Co.">
   <div class="glass" id="bzMain"></div>
   <div class="glass" id="bzSports"></div>
-  <div class="glass" id="cardwrap"><div id="card"><img src="assets/thank-you-card.gif" alt=""></div></div>
+  <div class="glass" id="cardwrap"><div id="card"><img id="tyimg" src="assets/thank-you-card.gif" alt="">
+    <div id="wx" class="hide">
+      <div id="wxTop"><span id="wxLive"></span><span id="wxDots"></span></div>
+      <div id="wxStore"></div>
+      <div id="wxMid"><div id="wxIcon"></div><div id="wxTemp"></div></div>
+      <div id="wxSky"></div>
+      <div id="wxBot"><span id="wxLow"></span><span id="wxPop"></span></div>
+    </div></div></div>
   <div class="glass" id="clock"><span class="d" id="date"></span><span id="time"></span></div>
   <div class="glass" id="bar"><div class="sheen"></div><div id="tick"><div id="crawl"></div></div><div class="glow"></div></div>
 </div>
@@ -122,6 +156,9 @@ var TICKER = [
   {text:"Deer Contest: Show Us Your Buck at the Counter or Message Us on Social", until:"2027-01-01"}
 ];
 var RELOAD_HOURS = 6;
+var CARD_SECONDS = 12;      /* Thank You card shows this long */
+var STORES_PER_TURN = 8;    /* then this many stores of live weather (all 8, about a minute) */
+var STORE_SECONDS = 7;      /* each store shows this long */
 var LEAVES_UNTIL = "2026-11-30";   /* falling leaves stop the day the Christmas look starts */
 /* ================== */
 (function(){
@@ -141,6 +178,55 @@ var LEAVES_UNTIL = "2026-11-30";   /* falling leaves stop the day the Christmas 
     if(t.until&&today>=new Date(t.until+'T00:00:00'))return false;return true;})
     .map(function(t){return typeof t==='string'?t:t.text});
 
+
+  /* ===== live weather (NWS) taking turns with the Thank You card ===== */
+  (function(){
+    var STORES=[["Winston-Salem","RAH",15,65],["Greensboro","RAH",32,66],["Burlington","RAH",44,68],["Durham","RAH",64,66],
+      ["Carrboro","RAH",58,61],["Raleigh","RAH",75,57],["Greenville","MHX",30,95],["Wilmington","ILM",89,75]];
+    var KEY='acrFrameWx1',data={};try{data=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){data={};}
+    function get(u){return fetch(u,{headers:{'Accept':'application/geo+json'},cache:'no-store'}).then(function(r){if(!r.ok)throw r.status;return r.json();});}
+    function load(s){var b='https://api.weather.gov/gridpoints/'+s[1]+'/'+s[2]+','+s[3];
+      return Promise.all([get(b+'/forecast'),get(b+'/forecast/hourly')]).then(function(r){var now=Date.now();
+        var h=r[1].properties.periods,p=r[0].properties.periods.filter(function(x){return Date.parse(x.endTime)>now;});
+        var c=h.filter(function(x){return Date.parse(x.startTime)<=now&&Date.parse(x.endTime)>now;})[0]||h[0];
+        var night=p.filter(function(x){return !x.isDaytime;})[0],day=p.filter(function(x){return x.isDaytime;})[0];
+        var pop=function(x){return x&&x.probabilityOfPrecipitation&&x.probabilityOfPrecipitation.value||0;};
+        data[s[0]]={t:c.temperature,sky:c.shortForecast,day:c.isDaytime,lo:night?night.temperature:null,hi:day?day.temperature:null,
+          pop:Math.max(pop(p[0]),pop(p[1])),at:now};});}
+    function refresh(){var i=0;(function next(){if(i>=STORES.length){try{localStorage.setItem(KEY,JSON.stringify(data));}catch(e){}return;}
+      load(STORES[i++]).catch(function(){}).then(function(){setTimeout(next,600);});})();}
+    refresh();setInterval(refresh,15*60*1000);
+    function icon(sky,day){sky=(sky||'').toLowerCase();
+      var sun='<g class="sunR"><circle cx="48" cy="48" r="17" fill="#FFC94A"/>'+[0,45,90,135,180,225,270,315].map(function(a){return '<rect x="46" y="12" width="4" height="12" rx="2" fill="#FFC94A" transform="rotate('+a+' 48 48)"/>';}).join('')+'</g>';
+      var moon='<path d="M58 22a26 26 0 1 0 18 40A22 22 0 0 1 58 22z" fill="#E3F1FC"/>';
+      var cloud=function(x,y,o){return '<g class="cl" opacity="'+(o||1)+'"><path d="M'+(x+14)+' '+(y+30)+'h40a14 14 0 0 0 0-28 20 20 0 0 0-38-4 13 13 0 0 0-2 32z" fill="#fff"/></g>';};
+      var drops=function(c){var s='';for(var k=0;k<3;k++)s+='<rect class="dr" style="animation-delay:'+(k*.45)+'s" x="'+(30+k*16)+'" y="70" width="'+(c?7:4)+'" height="'+(c?7:12)+'" rx="'+(c?3.5:2)+'" fill="'+(c?'#fff':'#7cc4f5')+'"/>';return s;};
+      var g;
+      if(/thunder|storm/.test(sky))g=cloud(14,28)+'<path d="M50 62l-10 18h9l-5 14 15-20h-9l6-12z" fill="#FFC94A"/>';
+      else if(/snow|flurr|sleet|ice/.test(sky))g=cloud(14,26)+drops(true);
+      else if(/rain|shower|drizzle/.test(sky))g=cloud(14,26)+drops(false);
+      else if(/fog|haze|mist/.test(sky))g='<g fill="#E3F1FC">'+[34,48,62].map(function(y,k){return '<rect class="cl" x="'+(16+k*6)+'" y="'+y+'" width="'+(60-k*6)+'" height="6" rx="3"/>';}).join('')+'</g>';
+      else if(/partly|mostly sunny|mostly clear|few clouds|partly cloudy/.test(sky))g=(day?sun:moon)+cloud(22,40);
+      else if(/cloud|overcast/.test(sky))g=cloud(4,20,.75)+cloud(20,38);
+      else g=day?sun:moon;
+      return '<svg viewBox="0 0 96 96">'+g+'</svg>';}
+    var wx=document.getElementById('wx'),ty=document.getElementById('tyimg'),si=0;
+    var dots=document.getElementById('wxDots');dots.innerHTML=STORES.map(function(){return '<i></i>';}).join('');
+    function fill(s){var d=data[s[0]];document.getElementById('wxStore').textContent=s[0];
+      document.getElementById('wxTemp').textContent=d.t+'°';document.getElementById('wxSky').textContent=d.sky;
+      document.getElementById('wxIcon').innerHTML=icon(d.sky,d.day);
+      document.getElementById('wxLow').textContent=(d.day&&d.hi!=null?'HIGH '+d.hi:'TONIGHT '+(d.lo!=null?d.lo:'--'))+'°';
+      document.getElementById('wxPop').textContent='RAIN '+d.pop+'%';
+      [].forEach.call(dots.children,function(e,k){e.className=STORES[k]===s?'on':'';});}
+    function fresh(s){var d=data[s[0]];return d&&Date.now()-d.at<6*3600*1000;}
+    function card(){wx.className='hide';ty.className='';setTimeout(weather,CARD_SECONDS*1000);}
+    function weather(){var list=[],k=0;while(list.length<STORES_PER_TURN&&k<STORES.length){var s=STORES[si%STORES.length];si++;k++;if(fresh(s))list.push(s);}
+      if(!list.length){setTimeout(weather,CARD_SECONDS*1000);return;}   /* no weather yet: keep the card up */
+      var j=0;fill(list[0]);wx.className='';ty.className='hide';
+      (function step(){j++;if(j>=list.length){setTimeout(card,STORE_SECONDS*1000);return;}
+        setTimeout(function(){wx.className='swap';setTimeout(function(){fill(list[j]);wx.className='';step();},550);},STORE_SECONDS*1000);})();}
+    setTimeout(weather,CARD_SECONDS*1000);
+  })();
   /* ===== falling leaves (behind the glass) ===== */
   (function(){
     if(LEAVES_UNTIL&&today>=new Date(LEAVES_UNTIL+'T00:00:00'))return;
