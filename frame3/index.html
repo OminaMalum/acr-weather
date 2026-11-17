@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1920,height=1080">
+<title>ACR Store Screen Frame v3</title>
+<!--
+  ACR Supply store TV frame, v2 "touch up" (Nov 16, 2026).
+  Full-screen bottom layer in TPM. TPM's Zone 1 slideshow (x -6..1528, y 46..880)
+  and the Screenfeed sports zone (x 1528..1910, y 392..1074) sit on top of it.
+  Edit the CONFIG block and push to update every store.
+-->
+<style>
+@font-face{font-family:Alpino;src:url(assets/Alpino-Bold.woff2) format("woff2");font-weight:700;font-display:block}
+@font-face{font-family:Alpino;src:url(assets/Alpino-Black.woff2) format("woff2");font-weight:900;font-display:block}
+@font-face{font-family:Expose;src:url(assets/Expose-Bold.woff2) format("woff2");font-weight:700;font-display:block}
+html,body{margin:0;padding:0;background:#071a30;overflow:hidden}
+#stage{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;overflow:hidden;
+  background:#071a30 url(assets/background-autumn-still.png) 0 0/1920px 1080px no-repeat}
+#bg{position:absolute;left:0;top:0;width:1920px;height:1080px}
+/* ===== v3 liquid glass ===== */
+.glass{position:absolute;border-radius:24px;
+  background:linear-gradient(160deg,rgba(255,255,255,.20) 0%,rgba(255,255,255,.06) 38%,rgba(120,190,255,.07) 100%);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255,255,255,.55),      /* top highlight */
+    inset 0 -1px 0 rgba(255,255,255,.12),
+    inset 0 0 0 1px rgba(255,255,255,.18),       /* glass rim */
+    0 0 34px rgba(64,160,240,.5),               /* blue glow */
+    0 24px 60px rgba(0,0,0,.55)}
+.glass:after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:radial-gradient(120% 60% at 20% 0%,rgba(255,255,255,.18),rgba(255,255,255,0) 60%)}
+/* bezels: TPM zones sit inside these like screens in glass */
+#bzMain{left:-30px;top:34px;width:1570px;height:858px}
+#bzSports{left:1519px;top:383px;width:400px;height:700px;border-radius:22px}
+/* top right card, rounded glass edge */
+#cardwrap{position:absolute;left:1519px;top:87px;width:400px;height:298px;border-radius:22px}
+#card{position:absolute;left:9px;top:9px;width:382px;height:280px;border-radius:15px;overflow:hidden;
+  background:url(assets/thank-you-card-still.png) 0 0/382px 280px}
+#card img{width:382px;height:280px;display:block}
+/* clock pill */
+#clock{background:linear-gradient(160deg,rgba(255,255,255,.22),rgba(255,255,255,.06)),rgba(8,32,62,.75)!important;position:absolute;left:1560px;top:22px;width:318px;height:52px;border-radius:26px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;box-sizing:border-box;font-family:Expose;font-weight:700;font-size:28px;letter-spacing:1px;color:#fff;text-transform:uppercase}
+#clock .d{color:#CFE6FA}
+/* ticker bar */
+#bar{position:absolute;left:330px;top:960px;width:1192px;height:92px;border-radius:46px;overflow:hidden;
+  background:linear-gradient(160deg,rgba(255,255,255,.22) 0%,rgba(255,255,255,.06) 45%,rgba(120,190,255,.08) 100%),linear-gradient(180deg,rgba(12,44,84,.88),rgba(6,26,52,.92))}
+#bar .glow{position:absolute;left:40px;right:40px;bottom:0;height:2px;border-radius:2px;
+  background:linear-gradient(90deg,rgba(95,176,234,0),rgba(95,176,234,.95) 50%,rgba(95,176,234,0));
+  box-shadow:0 0 14px rgba(95,176,234,.9)}
+#bar .sheen{position:absolute;top:0;bottom:0;width:220px;left:-260px;
+  background:linear-gradient(100deg,rgba(255,255,255,0),rgba(255,255,255,.16),rgba(255,255,255,0));
+  animation:sheen 14s linear infinite}
+@keyframes sheen{0%{transform:translateX(0)}22%{transform:translateX(1700px)}100%{transform:translateX(1700px)}}
+#tick{position:absolute;left:34px;right:34px;top:0;height:92px;overflow:hidden;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 50px,#000 calc(100% - 50px),transparent 100%);
+          mask-image:linear-gradient(90deg,transparent 0,#000 50px,#000 calc(100% - 50px),transparent 100%)}
+#crawl{position:absolute;left:0;top:0;height:92px;display:flex;align-items:center;white-space:nowrap;will-change:transform}
+#crawl .m{font-family:Alpino;font-weight:700;font-size:38px;color:#fff;letter-spacing:.3px;text-shadow:0 2px 10px rgba(0,30,70,.6)}
+#crawl .s{display:inline-block;width:10px;height:10px;border-radius:50%;background:#7CC4F5;box-shadow:0 0 12px rgba(124,196,245,.9);margin:0 46px;flex:none}
+</style>
+</head>
+<body>
+<div id="stage">
+  <img id="bg" src="assets/background-autumn.gif" alt="">
+  <div class="glass" id="bzMain"></div>
+  <div class="glass" id="bzSports"></div>
+  <div class="glass" id="cardwrap"><div id="card"><img src="assets/thank-you-card.gif" alt=""></div></div>
+  <div class="glass" id="clock"><span class="d" id="date"></span><span id="time"></span></div>
+  <div class="glass" id="bar"><div class="sheen"></div><div id="tick"><div id="crawl"></div></div><div class="glow"></div></div>
+</div>
+<script>
+/* ===== CONFIG ===== */
+var TICKER = [
+  "Thank you for choosing ACR Supply",
+  "We appreciate your business",
+  "8 stores across North Carolina, one team behind you",
+  "Get deals first: ask the counter about ACR text alerts",
+  "Find us on your feed: search ACR Supply",
+  {text:"Deer contest: show us your buck at the counter or message us on social", until:"2027-01-01"}
+];
+var SPEED = 70;          /* pixels per second */
+var RELOAD_HOURS = 6;
+/* ================== */
+(function(){
+  var stage=document.getElementById('stage');
+  function fit(){var s=Math.min(innerWidth/1920,innerHeight/1080);stage.style.transform='scale('+s+')';}
+  addEventListener('resize',fit);fit();
+  document.getElementById('bg').onerror=function(){this.style.display='none'};
+
+  var D=['SUN','MON','TUE','WED','THU','FRI','SAT'],M=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  function clock(){var n=new Date(),h=n.getHours(),m=n.getMinutes(),ap=h<12?'AM':'PM';h=h%12||12;
+    document.getElementById('time').textContent=h+':'+(m<10?'0':'')+m+' '+ap;
+    document.getElementById('date').textContent=D[n.getDay()]+' '+M[n.getMonth()]+' '+n.getDate();}
+  clock();setInterval(clock,10000);
+
+  var today=new Date();today.setHours(0,0,0,0);
+  var lines=TICKER.filter(function(t){if(typeof t==='string')return true;
+    if(t.from&&today<new Date(t.from+'T00:00:00'))return false;
+    if(t.until&&today>=new Date(t.until+'T00:00:00'))return false;return true;})
+    .map(function(t){return typeof t==='string'?t:t.text});
+  var crawl=document.getElementById('crawl');
+  /* two copies so the loop is seamless */
+  for(var k=0;k<2;k++)lines.forEach(function(l){
+    var s=document.createElement('span');s.className='m';s.textContent=l;crawl.appendChild(s);
+    var d=document.createElement('span');d.className='s';crawl.appendChild(d);});
+  var x=0,last=null,half=0;
+  function measure(){half=crawl.scrollWidth/2;}
+  (document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(measure);measure();
+  function step(t){if(last!==null){x-=SPEED*(t-last)/1000;if(half&&x<=-half)x+=half;}last=t;
+    crawl.style.transform='translate3d('+x.toFixed(1)+'px,0,0)';requestAnimationFrame(step);}
+  requestAnimationFrame(step);
+  setTimeout(function(){location.reload();},RELOAD_HOURS*3600*1000);
+})();
+</script>
+</body>
+</html>
