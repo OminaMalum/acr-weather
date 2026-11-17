@@ -14,18 +14,19 @@
 @font-face{font-family:Alpino;src:url(assets/Alpino-Bold.woff2) format("woff2");font-weight:700;font-display:block}
 @font-face{font-family:Alpino;src:url(assets/Alpino-Black.woff2) format("woff2");font-weight:900;font-display:block}
 @font-face{font-family:Expose;src:url(assets/Expose-Bold.woff2) format("woff2");font-weight:700;font-display:block}
-#stage{--accent:#006EB7;--accent-glow:rgba(0,110,183,.5)}
+#stage{--accent:#006EB7;--accent-glow:rgba(0,110,183,.45)}
+#b2{background:#003f73!important;opacity:.5!important}
 #stage.thanks{--accent:#F7941D;--accent-glow:rgba(247,148,29,.65)}
-html,body{margin:0;padding:0;background:#eef4fa;overflow:hidden}
+html,body{margin:0;padding:0;background:#00467A;overflow:hidden}
 #stage{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;overflow:hidden;
-  background:radial-gradient(1300px 900px at 15% 5%,#ffffff 0%,rgba(255,255,255,0) 60%),
-             radial-gradient(1100px 800px at 95% 100%,#d6e8f8 0%,rgba(214,232,248,0) 65%),
-             linear-gradient(160deg,#f7fbff 0%,#e8f1fa 55%,#d9e8f6 100%)}
+  background:radial-gradient(1300px 900px at 15% 0%,#2a93e0 0%,rgba(42,147,224,0) 60%),
+             radial-gradient(1100px 800px at 100% 100%,#004a85 0%,rgba(0,74,133,0) 65%),
+             linear-gradient(160deg,#0a7fd1 0%,#006EB7 45%,#00508c 100%)}
 /* slow liquid light blobs */
 .blob{position:absolute;border-radius:50%;filter:blur(90px);opacity:.55;will-change:transform}
-#b1{width:900px;height:700px;left:-200px;top:-200px;background:#ffffff;opacity:.9;animation:d1 38s ease-in-out infinite alternate}
+#b1{width:900px;height:700px;left:-200px;top:-200px;background:#7cc4f5;opacity:.45;animation:d1 38s ease-in-out infinite alternate}
 #b2{width:800px;height:800px;left:1200px;top:500px;background:#b9d9f5;opacity:.6;animation:d2 46s ease-in-out infinite alternate}
-#b3{width:700px;height:420px;left:520px;top:760px;background:#ffffff;opacity:.8;animation:d3 52s ease-in-out infinite alternate}
+#b3{width:700px;height:420px;left:520px;top:760px;background:#4fb0f0;opacity:.35;animation:d3 52s ease-in-out infinite alternate}
 @keyframes d1{to{transform:translate(260px,160px)}}
 @keyframes d2{to{transform:translate(-300px,-180px)}}
 @keyframes d3{to{transform:translate(220px,-120px)}}
@@ -33,13 +34,13 @@ html,body{margin:0;padding:0;background:#eef4fa;overflow:hidden}
 #logo{position:absolute;left:32px;top:922px;width:280px;filter:drop-shadow(0 0 18px rgba(255,255,255,.95))}
 /* ===== v3 liquid glass ===== */
 .glass{position:absolute;border-radius:24px;
-  background:linear-gradient(160deg,rgba(255,255,255,.85) 0%,rgba(255,255,255,.55) 45%,rgba(230,242,252,.6) 100%);
+  background:linear-gradient(160deg,rgba(255,255,255,.42) 0%,rgba(255,255,255,.16) 45%,rgba(255,255,255,.22) 100%);
   box-shadow:
-    inset 0 2px 0 rgba(255,255,255,1),          /* top highlight */
-    inset 0 0 0 1.5px rgba(255,255,255,.9),     /* glass rim */
-    0 0 40px rgba(255,255,255,1),               /* white glow */
-    0 0 90px rgba(255,255,255,.8),
-    0 18px 48px rgba(20,60,110,.18)}
+    inset 0 2px 0 rgba(255,255,255,.95),        /* top highlight */
+    inset 0 0 0 1.5px rgba(255,255,255,.7),     /* glass rim */
+    0 0 26px rgba(255,255,255,.55),             /* white glow */
+    0 0 70px rgba(255,255,255,.28),
+    0 20px 50px rgba(0,30,70,.35)}
 .glass:after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
   background:radial-gradient(120% 60% at 20% 0%,rgba(255,255,255,.5),rgba(255,255,255,0) 60%)}
 /* bezels: TPM zones sit inside these like screens in glass */
@@ -79,11 +80,24 @@ html,body{margin:0;padding:0;background:#eef4fa;overflow:hidden}
 /* one message at a time */
 #crawl{transition:transform .9s cubic-bezier(.2,.7,.2,1),opacity .6s ease}
 #crawl.out{opacity:0}
+#clock,#bar,#plate{background:linear-gradient(180deg,#ffffff,#f1f7fd)!important;
+  box-shadow:inset 0 0 0 1.5px #fff,0 0 30px rgba(255,255,255,.65),0 0 80px rgba(255,255,255,.3),0 16px 40px rgba(0,30,70,.35)!important}
+#plate{position:absolute;left:22px;top:910px;width:304px;height:108px;border-radius:30px}
+#logo{left:44px!important;top:928px!important;width:260px!important;filter:none!important}
+/* orange contrast touches */
+#stage{--accent:#F7941D!important;--accent-glow:rgba(247,148,29,.7)!important}
+#clock .d{color:#F7941D!important}
+#crawl .m{color:#00467A!important}
+.glass:before{display:none}
+#bar:before,#clock:before{display:block!important;content:"";position:absolute;left:0;top:22px;bottom:22px;width:6px;border-radius:0 6px 6px 0;background:#F7941D;box-shadow:0 0 12px rgba(247,148,29,.6)}
+#bar:before{left:0;top:24px;bottom:24px}
+#clock:before{top:16px;bottom:16px}
 </style>
 </head>
 <body>
 <div id="stage">
   <div class="blob" id="b1"></div><div class="blob" id="b2"></div><div class="blob" id="b3"></div>
+  <div class="glass" id="plate"></div>
   <img id="logo" src="assets/acr-logo-color.png" alt="ACR Supply Co.">
   <div class="glass" id="bzMain"></div>
   <div class="glass" id="bzSports"></div>
@@ -143,8 +157,9 @@ var RELOAD_HOURS = 6;
   }
   (document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(show);
 
-  var ACCENT_THANKS_UNTIL='2026-11-27';  /* orange Thanksgiving accents through Thanksgiving Day */
-  if(today<new Date(ACCENT_THANKS_UNTIL+'T23:59:59'))document.getElementById('stage').classList.add('thanks');
+  /* Seasonal accent: add a date here to turn on orange (class 'thanks'). Off by Anthony's call Nov 16: full white glow + ACR blue. */
+  var ACCENT_THANKS_UNTIL='';
+  if(ACCENT_THANKS_UNTIL&&today<new Date(ACCENT_THANKS_UNTIL+'T23:59:59'))document.getElementById('stage').classList.add('thanks');
   setTimeout(function(){location.reload();},RELOAD_HOURS*3600*1000);
 })();
 </script>
