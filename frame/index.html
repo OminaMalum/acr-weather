@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1920,height=1080">
+<title>ACR Store Screen Frame</title>
+<!--
+  ACR Supply store TV frame (Nov 2026).
+  Full-screen bottom layer in TPM. TPM's own Zone 1 slideshow and the Screenfeed
+  sports zone sit on top of it. This page draws everything around them:
+  background, top right card, ticker. Edit the CONFIG block below and push to update.
+-->
+<style>
+@font-face{font-family:"Bebas Neue";src:url(assets/BebasNeue-Regular.woff2) format("woff2");font-display:block}
+html,body{margin:0;padding:0;background:#0b1a2e;overflow:hidden}
+#stage{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;overflow:hidden;
+  background:#0b1a2e url(assets/background-autumn-still.png) 0 0/1920px 1080px no-repeat}
+#bg{position:absolute;left:0;top:0;width:1920px;height:1080px}
+#cardwrap{position:absolute;left:1528px;top:96px;width:382px;height:280px;background:url(assets/thank-you-card-still.png) 0 0/382px 280px}
+#card{width:382px;height:280px;display:block}
+#ticker{position:absolute;left:340px;top:984px;width:1170px;height:54px;overflow:hidden}
+#crawl{position:absolute;left:0;top:0;height:54px;display:flex;align-items:center;white-space:nowrap;will-change:transform}
+#crawl span{font-family:"Bebas Neue",Impact,sans-serif;font-size:40px;font-style:italic;font-weight:bold;color:#fff;
+  line-height:54px;padding-right:420px}
+</style>
+</head>
+<body>
+<div id="stage">
+  <img id="bg" src="assets/background-autumn.gif" alt="">
+  <div id="cardwrap"><img id="card" src="assets/thank-you-card.gif" alt=""></div>
+  <div id="ticker"><div id="crawl"></div></div>
+</div>
+<script>
+/* ===== CONFIG: edit these lines, push, and every store picks it up on next reload ===== */
+var TICKER = [
+  "THANK YOU FOR CHOOSING ACR SUPPLY",
+  "WE APPRECIATE YOUR BUSINESS",
+  "8 STORES ACROSS NORTH CAROLINA, ONE TEAM BEHIND YOU",
+  "GET DEALS FIRST: ASK THE COUNTER ABOUT ACR TEXT ALERTS",
+  "FIND US ON YOUR FEED: SEARCH ACR SUPPLY",
+  {text:"DEER CONTEST: SHOW US YOUR BUCK AT THE COUNTER OR MESSAGE US ON SOCIAL", until:"2027-01-01"}
+];
+var SPEED = 70;            /* pixels per second, matches TPM ticker "Normal 1x" */
+var RELOAD_HOURS = 6;      /* page reloads itself so pushed changes show up */
+/* ===================================================================================== */
+
+(function(){
+  // Fit 1920x1080 design to whatever size TPM gives the layer.
+  var stage=document.getElementById('stage');
+  function fit(){var s=Math.min(innerWidth/1920,innerHeight/1080);stage.style.transform='scale('+s+')';}
+  addEventListener('resize',fit);fit();
+
+  // If the animated background fails, the still underneath stays visible.
+  document.getElementById('bg').onerror=function(){this.style.display='none'};
+
+  var today=new Date();today.setHours(0,0,0,0);
+  var lines=TICKER.filter(function(t){
+    if(typeof t==='string')return true;
+    var ok=true;
+    if(t.from&&today<new Date(t.from+'T00:00:00'))ok=false;
+    if(t.until&&today>=new Date(t.until+'T00:00:00'))ok=false;
+    return ok;
+  }).map(function(t){return typeof t==='string'?t:t.text});
+
+  var crawl=document.getElementById('crawl');
+  function build(){
+    crawl.innerHTML='';
+    lines.forEach(function(l){var s=document.createElement('span');s.textContent=l;crawl.appendChild(s);});
+  }
+  build();
+  var boxW=1170, x=boxW, last=null, w=0;
+  function measure(){w=crawl.scrollWidth;}
+  (document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(measure);
+  measure();
+  function step(t){
+    if(last!==null){x-=SPEED*(t-last)/1000; if(x<-w){x=boxW;}}
+    last=t;
+    crawl.style.transform='translate3d('+x.toFixed(1)+'px,0,0)';
+    requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+
+  setTimeout(function(){location.reload();},RELOAD_HOURS*3600*1000);
+})();
+</script>
+</body>
+</html>
