@@ -1,8 +1,8 @@
 // Keeps slideshow media on the TV so each loop plays from local storage, not the internet.
 // Media files are cache-first (rename a file to replace it). Everything else is network-first.
-var CACHE = 'acr-slides-media-v1';
+var CACHE = 'acr-slides-media-v2';
 self.addEventListener('install', function(e){ self.skipWaiting(); });
-self.addEventListener('activate', function(e){ e.waitUntil(self.clients.claim()); });
+self.addEventListener('activate', function(e){ e.waitUntil(caches.keys().then(function(ks){ return Promise.all(ks.filter(function(k){ return k !== CACHE; }).map(function(k){ return caches.delete(k); })); }).then(function(){ return self.clients.claim(); })); });
 self.addEventListener('fetch', function(e){
   var url = new URL(e.request.url);
   if (e.request.method !== 'GET') return;

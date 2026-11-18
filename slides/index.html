@@ -52,7 +52,7 @@ html,body{margin:0;padding:0;width:100%;height:100%;background:#000;overflow:hid
     if (!window.caches) return;
     try {
       var keep = {}; cfg.items.forEach(function(it){ keep[new URL(it.file, location.href).pathname] = 1; });
-      caches.open('acr-slides-media-v1').then(function(c){ c.keys().then(function(ks){ ks.forEach(function(k){ var p = new URL(k.url).pathname; if (!keep[p]) c.delete(k); }); }); });
+      caches.open('acr-slides-media-v2').then(function(c){ c.keys().then(function(ks){ ks.forEach(function(k){ var p = new URL(k.url).pathname; if (!keep[p]) c.delete(k); }); }); });
     } catch(e){}
   }
 
