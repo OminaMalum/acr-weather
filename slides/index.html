@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ACR Store Slideshow</title>
+<!--
+  ACR store TV slideshow. Plays slides.json in order, on a loop.
+  Sits inside the TPM Zone 1 Web layer (any size, keeps 16:9 fill).
+  Edit slides.json to change order, timing, dates. Media lives in media/.
+  ?debug=1 shows a small status line.
+-->
+<style>
+html,body{margin:0;padding:0;width:100%;height:100%;background:#000;overflow:hidden}
+.layer{position:absolute;inset:0;opacity:0;transition-property:opacity;transition-timing-function:ease-in-out}
+.layer.on{opacity:1}
+.layer img,.layer video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000}
+#dbg{position:absolute;left:8px;bottom:8px;font:14px/1.3 monospace;color:#fff;background:rgba(0,0,0,.6);padding:4px 8px;display:none;z-index:9}
+</style>
+</head>
+<body>
+<div id="A" class="layer"></div>
+<div id="B" class="layer"></div>
+<div id="dbg"></div>
+<script>
+(function(){
+  var LIST_URL = 'slides.json';
+  var RELOAD_LIST_MIN = 10;      // check slides.json for edits this often (applies at next slide)
+  var RELOAD_PAGE_HOURS = 6;     // full page refresh to pick up code changes
+  var DEBUG = /debug=1/.test(location.search);
+  var dbg = document.getElementById('dbg'); if (DEBUG) dbg.style.display = 'block';
+  function log(t){ if (DEBUG) dbg.textContent = t; }
+
+  if ('serviceWorker' in navigator) { try { navigator.serviceWorker.register('sw.js'); } catch(e){} }
+
+  var cfg = {fade:1, items:[]}, idx = -1, front = document.getElementById('A'), back = document.getElementById('B'), timer = null, guard = null;
+
+  function today(){ var d=new Date(); return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2); }
+  function live(it){ var t=today(); if (it.off) return false; if (it.start && t < it.start) return false; if (it.until && t > it.until) return false; return true; }
+  function liveItems(){ return cfg.items.filter(live); }
+
+  function loadList(cb){
+    var x = new XMLHttpRequest();
+    x.open('GET', LIST_URL + '?t=' + Date.now());
+    x.onload = function(){ try { var j = JSON.parse(x.responseText); if (j.items && j.items.length) { cfg = j; try{localStorage.setItem('acrSlides', x.responseText);}catch(e){} prune(); } } catch(e){} cb && cb(); };
+    x.onerror = function(){ try { var s = localStorage.getItem('acrSlides'); if (s && !cfg.items.length) cfg = JSON.parse(s); } catch(e){} cb && cb(); };
+    x.send();
+  }
+
+  // drop cached media that is no longer in the list, so the TV's storage doesn't fill up
+  function prune(){
+    if (!window.caches) return;
+    try {
+      var keep = {}; cfg.items.forEach(function(it){ keep[new URL(it.file, location.href).pathname] = 1; });
+      caches.open('acr-slides-media-v1').then(function(c){ c.keys().then(function(ks){ ks.forEach(function(k){ var p = new URL(k.url).pathname; if (!keep[p]) c.delete(k); }); }); });
+    } catch(e){}
+  }
+
+  function build(it){
+    var el;
+    if (it.type === 'video') {
+      el = document.createElement('video');
+      el.muted = true; el.setAttribute('muted',''); el.playsInline = true; el.setAttribute('playsinline','');
+      el.preload = 'auto'; el.src = it.file;
+    } else {
+      el = document.createElement('img'); el.decoding = 'async'; el.src = it.file;
+    }
+    return el;
+  }
+
+  var nextEl = null, nextIt = null;
+  function prepNext(list, i){
+    var it = list[i % list.length]; nextIt = it; nextEl = build(it);
+  }
+
+  function show(){
+    clearTimeout(timer); clearTimeout(guard);
+    var list = liveItems(); if (!list.length) { timer = setTimeout(show, 5000); return; }
+    idx = (idx + 1) % list.length;
+    var it = list[idx], el = (nextIt === it && nextEl) ? nextEl : build(it);
+    var fade = (cfg.fade == null ? 1 : cfg.fade);
+    back.innerHTML = ''; back.appendChild(el);
+    back.style.transitionDuration = fade + 's';
+    var advanced = false;
+    function go(){ if (advanced) return; advanced = true; show(); }
+    function reveal(){
+      back.classList.add('on'); front.classList.remove('on');
+      var t = front; front = back; back = t;
+      setTimeout(function(){ if (!back.classList.contains('on')) { var v = back.querySelector('video'); if (v) { v.pause(); v.removeAttribute('src'); v.load(); } back.innerHTML=''; } }, fade*1000 + 100);
+      log((idx+1)+'/'+list.length+' '+it.file+' '+it.seconds+'s');
+      prepNext(list, idx + 1);
+    }
+    if (it.type === 'video') {
+      var started = false;
+      el.onended = go;
+      el.onerror = function(){ go(); };
+      var p = el.play(); if (p && p.catch) p.catch(function(){});
+      el.onplaying = function(){ if (!started) { started = true; reveal(); } };
+      guard = setTimeout(function(){ if (!started) go(); }, 8000);      // could not start: skip
+      timer = setTimeout(go, (it.seconds + 2) * 1000);                    // never hang past its time
+      el.addEventListener('playing', function(){ clearTimeout(guard); clearTimeout(timer); timer = setTimeout(go, Math.max(it.seconds, (el.duration||0)) * 1000 + 1500); }, {once:true});
+    } else {
+      var done = false;
+      function ready(){ if (done) return; done = true; reveal(); timer = setTimeout(go, it.seconds * 1000); }
+      if (el.complete && el.naturalWidth) ready(); else { el.onload = ready; el.onerror = go; guard = setTimeout(function(){ if(!done) go(); }, 8000); }
+    }
+  }
+
+  loadList(show);
+  setInterval(function(){ loadList(); }, RELOAD_LIST_MIN * 60000);
+  setTimeout(function(){ location.reload(); }, RELOAD_PAGE_HOURS * 3600000);
+})();
+</script>
+</body>
+</html>

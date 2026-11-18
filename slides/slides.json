@@ -1,0 +1,270 @@
+{
+ "_how": "Order = play order. seconds = time on screen (videos also stop when they end). Optional: \"start\":\"YYYY-MM-DD\", \"until\":\"YYYY-MM-DD\" (last day shown), \"off\":true to skip.",
+ "fade": 1.0,
+ "items": [
+  {
+   "file": "media/01_ACR_Mission_Motion_v4_1080p.mp4",
+   "seconds": 10,
+   "type": "video",
+   "name": "ACR_Mission_Motion_v4_1080p.mp4"
+  },
+  {
+   "file": "media/02_ACR_Meme_Parts_House_Run.jpg",
+   "seconds": 15,
+   "type": "image",
+   "name": "ACR_Meme_Parts_House_Run.png"
+  },
+  {
+   "file": "media/03_ACR_Milwaukee_press18_TV_Spotlight_1920x1080.mp4",
+   "seconds": 9,
+   "type": "video",
+   "name": "ACR_Milwaukee_press18_TV_Spotlight_1920x1080.mp4"
+  },
+  {
+   "file": "media/04_Copeland_Class_Recap_TV_1920x1080.jpg",
+   "seconds": 20,
+   "type": "image",
+   "name": "Copeland_Class_Recap_TV_1920x1080.png"
+  },
+  {
+   "file": "media/05_ACR_Supply_Quizzes_of_the_Week_1920x1080.mp4",
+   "seconds": 61,
+   "type": "video",
+   "name": "ACR_Supply_Quizzes_of_the_Week_1920x1080.mp4"
+  },
+  {
+   "file": "media/06_Monitor_Raleigh_Tree_90s_1920x1080.jpg",
+   "seconds": 20,
+   "type": "image",
+   "name": "Monitor_Raleigh_Tree_90s_1920x1080.png"
+  },
+  {
+   "file": "media/07_ACR_Milwaukee_TV_Long_Loop_1920x1080.mp4",
+   "seconds": 71,
+   "type": "video",
+   "name": "ACR_Milwaukee_TV_Long_Loop_1920x1080.mp4"
+  },
+  {
+   "file": "media/08_ACR_Deer_Contest.jpg",
+   "seconds": 20,
+   "type": "image",
+   "name": "ACR Deer Contest.png"
+  },
+  {
+   "file": "media/09_ACR_Deer_Shoutout_Hayden_Hayes_Boer_Brothers.jpg",
+   "seconds": 15,
+   "type": "image",
+   "name": "ACR_Deer_Shoutout_Hayden_Hayes_Boer_Brothers.png"
+  },
+  {
+   "file": "media/10_ACR_Deer_Shoutout_Chase_Heath_Smith_and_Sons.jpg",
+   "seconds": 15,
+   "type": "image",
+   "name": "ACR_Deer_Shoutout_Chase_Heath_Smith_and_Sons.png"
+  },
+  {
+   "file": "media/11_Moblico_Alerts_New.jpg",
+   "seconds": 20,
+   "type": "image",
+   "name": "Moblico Alerts New.png"
+  },
+  {
+   "file": "media/12_ACR_Milwaukee_forge_TV_1920x1080.mp4",
+   "seconds": 12,
+   "type": "video",
+   "name": "ACR_Milwaukee_forge_TV_1920x1080.mp4"
+  },
+  {
+   "file": "media/13_ACR_Milwaukee_TV_3_M18_Tools_1920x1080.jpg",
+   "seconds": 20,
+   "type": "image",
+   "name": "ACR_Milwaukee_TV_3_M18_Tools_1920x1080.png"
+  },
+  {
+   "file": "media/14_Feel_the_Rush_TV_1920x1080_v1.jpg",
+   "seconds": 15,
+   "type": "image",
+   "name": "Feel_the_Rush_TV_1920x1080_v1.png"
+  },
+  {
+   "file": "media/15_410A_Gas_Packs_Promo_1920x1080.mp4",
+   "seconds": 37,
+   "type": "video",
+   "name": "410A_Gas_Packs_Promo_1920x1080.mp4"
+  },
+  {
+   "file": "media/16_ACR_Weekly_Forecast_2026-11-16_TV_1920x1080.mp4",
+   "seconds": 19,
+   "type": "video",
+   "name": "ACR_Weekly_Forecast_2026-11-16_TV_1920x1080.mp4"
+  },
+  {
+   "file": "media/17_ACR_Weekly_Forecast_2026-11-16_TV_Still.jpg",
+   "seconds": 13,
+   "type": "image",
+   "name": "ACR_Weekly_Forecast_2026-11-16_TV_Still.png"
+  },
+  {
+   "file": "media/18_acr-follow-us-v6.mp4",
+   "seconds": 25,
+   "type": "video",
+   "name": "acr-follow-us-v6.mp4"
+  },
+  {
+   "file": "media/19_ACR_Milwaukee_TV_1_All_Deals_1920x1080.jpg",
+   "seconds": 20,
+   "type": "image",
+   "name": "ACR_Milwaukee_TV_1_All_Deals_1920x1080.png"
+  },
+  {
+   "file": "media/20_ACR_Birthdays_Nov16-30_1920x1080.mp4",
+   "seconds": 16,
+   "type": "video",
+   "name": "ACR_Birthdays_Nov16-30_1920x1080.mp4"
+  },
+  {
+   "file": "media/21_ACR_Deer_Contest.jpg",
+   "seconds": 15,
+   "type": "image",
+   "name": "ACR Deer Contest.png"
+  },
+  {
+   "file": "media/22_ACR_Deer_Shoutout_Mike_Cromer_WSFCS.jpg",
+   "seconds": 15,
+   "type": "image",
+   "name": "ACR_Deer_Shoutout_Mike_Cromer_WSFCS.png"
+  },
+  {
+   "file": "media/23_ACR_Deer_Shoutout_Nathan_Moore_Piedmont_Service_Group.jpg",
+   "seconds": 15,
+   "type": "image",
+   "name": "ACR_Deer_Shoutout_Nathan_Moore_Piedmont_Service_Group.png"
+  },
+  {
+   "file": "media/24_ACR_Meme_Turkey_Stuffed_Condenser.jpg",
+   "seconds": 15,
+   "type": "image",
+   "name": "ACR_Meme_Turkey_Stuffed_Condenser.png"
+  },
+  {
+   "file": "media/25_ACR_Milwaukee_TV_2_Press_Tools_1920x1080.jpg",
+   "seconds": 20,
+   "type": "image",
+   "name": "ACR_Milwaukee_TV_2_Press_Tools_1920x1080.png"
+  },
+  {
+   "file": "media/26_ACR_Blog_Promo_TV_1920x1080.mp4",
+   "seconds": 23,
+   "type": "video",
+   "name": "ACR_Blog_Promo_TV_1920x1080.mp4"
+  },
+  {
+   "file": "media/27_ACR_Streamline_Milwaukee_Promo_1920x1080.mp4",
+   "seconds": 25,
+   "type": "video",
+   "name": "ACR_Streamline_Milwaukee_Promo_1920x1080.png"
+  },
+  {
+   "file": "media/28_ClimateMaster_202_Training_TV_1920x1080.jpg",
+   "seconds": 15,
+   "type": "image",
+   "name": "ClimateMaster_202_Training_TV_1920x1080.png"
+  },
+  {
+   "file": "media/29_ClimateMaster_Trilogy_SQ_SV_Training_TV_1920x1080.jpg",
+   "seconds": 15,
+   "type": "image",
+   "name": "ClimateMaster_Trilogy_SQ_SV_Training_TV_1920x1080.png"
+  },
+  {
+   "file": "media/30_ACR_Meme_Little_Thing.jpg",
+   "seconds": 15,
+   "type": "image",
+   "name": "ACR_Meme_Little_Thing.png"
+  },
+  {
+   "file": "media/31_LG_Graphic_redone.jpg",
+   "seconds": 20,
+   "type": "image",
+   "name": "LG Graphic redone.png"
+  },
+  {
+   "file": "media/32_Video_88efa417.mp4",
+   "seconds": 15,
+   "type": "video",
+   "name": "Video_88efa417.mp4"
+  },
+  {
+   "file": "media/33_JB_Pump_Days_Nov_2026_Monitor_Slide_1920x1080.jpg",
+   "seconds": 16,
+   "type": "image",
+   "name": "JB_Pump_Days_Nov_2026_Monitor_Slide_1920x1080.png"
+  },
+  {
+   "file": "media/34_TV_01_Promo.jpg",
+   "seconds": 14,
+   "type": "image",
+   "name": "TV_01_Promo.png"
+  },
+  {
+   "file": "media/35_R410A_Campaign_Motion_16x9_1920x1080.mp4",
+   "seconds": 22,
+   "type": "video",
+   "name": "R410A_Campaign_Motion_16x9_1920x1080.mp4"
+  },
+  {
+   "file": "media/36_ACR_Deer_Contest_October_Winner_Shellie_Pulse_1920x1080.jpg",
+   "seconds": 17,
+   "type": "image",
+   "name": "ACR_Deer_Contest_October_Winner_Shellie_Pulse_1920x1080.png"
+  },
+  {
+   "file": "media/37_LG_Training_Days_Landscape_1920x1080_Nov16.jpg",
+   "seconds": 20,
+   "type": "image",
+   "name": "LG_Training_Days_Landscape_1920x1080_Nov16.png"
+  },
+  {
+   "file": "media/38_BSG_Counter_Days_2026_TV_Slide_1920x1080.jpg",
+   "seconds": 20,
+   "type": "image",
+   "name": "BSG_Counter_Days_2026_TV_Slide_1920x1080.png"
+  },
+  {
+   "file": "media/39_Thanksgiving_Closed_TV_1672x941.jpg",
+   "seconds": 15,
+   "type": "image",
+   "name": "Thanksgiving_Closed_TV_1672x941.png"
+  },
+  {
+   "file": "media/40_FEEL_THE_RUSH_In-Store_Video_light.mp4",
+   "seconds": 30,
+   "type": "video",
+   "name": "FEEL_THE_RUSH_In-Store_Video_light.mp4"
+  },
+  {
+   "file": "media/41_ACR_Deer_Shoutout_Brent_Lewis_Roxboro.jpg",
+   "seconds": 15,
+   "type": "image",
+   "name": "ACR_Deer_Shoutout_Brent_Lewis_Roxboro.png"
+  },
+  {
+   "file": "media/42_ACR_Deer_Shoutout_Jeremy_Hundley_Tri_South.jpg",
+   "seconds": 15,
+   "type": "image",
+   "name": "ACR_Deer_Shoutout_Jeremy_Hundley_Tri_South.png"
+  },
+  {
+   "file": "media/43_ACR_Shurtape_HVAC_Tape_Landscape_light.mp4",
+   "seconds": 84,
+   "type": "video",
+   "name": "ACR_Shurtape_HVAC_Tape_Landscape_light.mp4"
+  },
+  {
+   "file": "media/44_ACR_FrogTape_Flashing_Tape_Landscape_light.mp4",
+   "seconds": 99,
+   "type": "video",
+   "name": "ACR_FrogTape_Flashing_Tape_Landscape_light.mp4"
+  }
+ ]
+}
