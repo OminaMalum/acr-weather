@@ -124,6 +124,19 @@ html,body{margin:0;padding:0;background:#00467A;overflow:hidden}
 .cl{animation:drift 7s ease-in-out infinite}
 .dr{animation:fall 1.4s linear infinite}
 #leaves{position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none}
+/* ===== Christmas look A "Snowed In" (Nov 30, 2026 to Jan 3, 2027; class xmas on #stage) ===== */
+#stage.xmas{background:radial-gradient(1300px 900px at 15% 0%,#3c79b8 0%,rgba(60,121,184,0) 60%),
+  radial-gradient(1100px 800px at 100% 100%,#0a2547 0%,rgba(10,37,71,0) 65%),
+  linear-gradient(160deg,#1d5a96 0%,#123d6b 45%,#0a2648 100%)}
+#stage.xmas #b1{background:#dbeeff;opacity:.30}
+#stage.xmas #b2{background:#cfe6ff!important;opacity:.28!important}
+#stage.xmas #b3{background:#9fd0ff;opacity:.25}
+#stage.xmas #bar .glow{background:linear-gradient(90deg,rgba(232,244,255,0),#eaf5ff 25%,#eaf5ff 75%,rgba(232,244,255,0))!important;box-shadow:0 0 16px rgba(220,240,255,.95)!important}
+#stage.xmas #clock .d{color:#bfe3ff!important}
+#stage.xmas #wxLive,#stage.xmas #wxBot span:last-child{color:#bfe3ff}
+#snowfx{position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none;display:none}
+#stage.xmas #snowfx{display:block}
+
 </style>
 </head>
 <body>
@@ -143,11 +156,13 @@ html,body{margin:0;padding:0;background:#00467A;overflow:hidden}
       <div id="wxBot"><span id="wxLow"></span><span id="wxPop"></span></div>
     </div></div></div>
   <div class="glass" id="clock"><span class="d" id="date"></span><span id="time"></span></div>
+  <svg id="snowfx" width="1920" height="1080"></svg>
   <div class="glass" id="bar"><div class="sheen"></div><div id="tick"><div id="crawl"></div></div><div class="glow"></div></div>
 </div>
 <script>
 /* ===== CONFIG ===== */
 var TICKER = [
+  {text:"Merry Christmas From All of Us at ACR Supply", from:"2026-11-30", until:"2027-01-04"},
   "Thank You for Choosing ACR Supply",
   "We Appreciate Your Business",
   "8 Stores Across North Carolina, One Team Behind You",
@@ -160,6 +175,8 @@ var CARD_SECONDS = 12;      /* Thank You card shows this long */
 var STORES_PER_TURN = 8;    /* then this many stores of live weather (all 8, about a minute) */
 var STORE_SECONDS = 7;      /* each store shows this long */
 var LEAVES_UNTIL = "2026-11-30";   /* falling leaves stop the day the Christmas look starts */
+var XMAS_FROM = "2026-11-30";      /* Christmas look A (snow, snow caps, icicles, Christmas card, icy accents) */
+var XMAS_UNTIL = "2027-01-04";     /* first day back to the normal look */
 /* ================== */
 (function(){
   var stage=document.getElementById('stage');
@@ -172,10 +189,12 @@ var LEAVES_UNTIL = "2026-11-30";   /* falling leaves stop the day the Christmas 
     document.getElementById('date').textContent=D[n.getDay()]+' '+M[n.getMonth()]+' '+n.getDate();}
   clock();setInterval(clock,10000);
 
-  var today=new Date();today.setHours(0,0,0,0);
+  var today=new Date();var _qd=/[?&]date=(\d{4}-\d\d-\d\d)/.exec(location.search);if(_qd)today=new Date(_qd[1]+'T00:00:00');today.setHours(0,0,0,0);
+  var XMAS=today>=new Date(XMAS_FROM+'T00:00:00')&&today<new Date(XMAS_UNTIL+'T00:00:00');
+  if(XMAS){stage.classList.add('xmas');var _ty=document.getElementById('tyimg');_ty.src='assets/christmas-card.gif';document.getElementById('card').style.backgroundImage='url(assets/christmas-card-still.png)';}
   var lines=TICKER.filter(function(t){if(typeof t==='string')return true;
     if(t.from&&today<new Date(t.from+'T00:00:00'))return false;
-    if(t.until&&today>=new Date(t.until+'T00:00:00'))return false;return true;})
+    if(t.until&&today>=new Date(t.until+'T00:00:00'))return false;if(t.from&&today<new Date(t.from+'T00:00:00'))return false;return true;})
     .map(function(t){return typeof t==='string'?t:t.text});
 
 
@@ -250,6 +269,35 @@ var LEAVES_UNTIL = "2026-11-30";   /* falling leaves stop the day the Christmas 
         var x=l.x+Math.sin(l.ph)*l.sw;if(l.y>1140)L[k]=mk(false);
         cx.save();cx.globalAlpha=l.a;cx.translate(x,l.y);cx.rotate(l.r);cx.scale(Math.cos(l.ph*1.3),1);
         cx.drawImage(l.sp,-l.s/2,-l.s/2,l.s,l.s);cx.restore();}}
+    requestAnimationFrame(f);
+  })();
+
+  /* ===== Christmas look A: snow caps, icicles, snowbank, falling snow ===== */
+  (function(){
+    if(!XMAS)return;
+    var sv=document.getElementById('snowfx'),seed=1977,R=function(){return (seed=(seed*16807)%2147483647)/2147483647;},h='';
+    h+='<defs><linearGradient id="sg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset=".6" stop-color="#eef5fc"/><stop offset="1" stop-color="#c9dbee"/></linearGradient>'+
+       '<linearGradient id="ig" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4faff" stop-opacity=".95"/><stop offset="1" stop-color="#a9cdee" stop-opacity=".2"/></linearGradient></defs>';
+    function cap(x0,x1,y,hm){var d='M'+(x0-4)+' '+(y+5)+' ',n=Math.ceil((x1-x0)/26),i,x,hh;
+      for(i=0;i<=n;i++){x=x0+i*(x1-x0)/n;hh=(i===0||i===n)?hm*.35:hm*(.55+R()*.45);d+='Q '+(x-13)+' '+(y-hh-4)+' '+x+' '+(y-hh)+' ';}
+      d+='L '+(x1+4)+' '+(y+5)+' ';for(x=x1;x>x0;x-=18+R()*22){d+='Q '+(x-5)+' '+(y+(R()<.3?8+R()*10:4))+' '+(x-10)+' '+(y+4)+' ';}
+      h+='<path d="'+d+'Z" fill="url(#sg)" style="filter:drop-shadow(0 3px 3px rgba(10,35,64,.45))"/>';}
+    function icicles(x0,x1,y,ml){for(var x=x0;x<x1;x+=9+R()*16){var l=6+Math.pow(R(),2)*ml,w=3+R()*4;
+      h+='<path d="M'+(x-w)+' '+y+' L'+(x+w)+' '+y+' L'+(x+.6)+' '+(y+l)+' Z" fill="url(#ig)"/>';}}
+    cap(48,1456,24,16);cap(1520,1872,24,12);cap(1520,1872,96,14);cap(1520,1872,400,12);cap(44,304,905,12);cap(376,1456,905,12);
+    icicles(60,1444,850,40);
+    var d='M-20 1100 L-20 1066 ';for(var x=-20;x<=1960;x+=60)d+='Q '+(x+30)+' '+(1054-R()*14)+' '+(x+60)+' '+(1064+R()*6)+' ';
+    h+='<path d="'+d+'L1960 1100 Z" fill="url(#sg)"/>';
+    sv.innerHTML=h;
+    var cv=document.getElementById('leaves'),cx=cv.getContext('2d'),F=[];
+    function mk(top){var big=Math.random()<.06;return{x:Math.random()*1920,y:top?Math.random()*1080:-20,r:big?6+Math.random()*3:1.5+Math.random()*3.2,
+      v:big?60:30+Math.random()*50,sw:10+Math.random()*30,ph:Math.random()*6.28,fr:.5+Math.random()*.8,a:big?.35:.45+Math.random()*.45};}
+    for(var k=0;k<160;k++)F.push(mk(true));
+    var last=null,acc=0;
+    function f(t){requestAnimationFrame(f);if(last===null){last=t;return;}var dt=(t-last)/1000;last=t;if(dt>.2)dt=.2;
+      acc+=dt;if(acc<1/30)return;dt=acc;acc=0;cx.clearRect(0,0,1920,1080);cx.fillStyle='#fff';
+      for(var k=0;k<F.length;k++){var p=F[k];p.y+=p.v*dt;p.ph+=p.fr*dt;if(p.y>1100)F[k]=p=mk(false);
+        cx.globalAlpha=p.a;cx.beginPath();cx.arc(p.x+Math.sin(p.ph)*p.sw,p.y,p.r,0,6.283);cx.fill();}}
     requestAnimationFrame(f);
   })();
   var crawl=document.getElementById('crawl'), box=document.getElementById('tick');
