@@ -93,16 +93,18 @@
    "name": "410A_Gas_Packs_Promo_1920x1080.mp4"
   },
   {
-   "file": "media/16_ACR_Weekly_Forecast_2026-11-16_TV_1920x1080.mp4",
-   "seconds": 19,
+   "file": "media/16_ACR_Weekly_Forecast_2026-11-23_TV_1920x1080.mp4",
+   "seconds": 18,
    "type": "video",
-   "name": "ACR_Weekly_Forecast_2026-11-16_TV_1920x1080.mp4"
+   "name": "ACR_Weekly_Forecast_2026-11-23_TV_1920x1080.mp4",
+   "until": "2026-11-29"
   },
   {
-   "file": "media/17_ACR_Weekly_Forecast_2026-11-16_TV_Still.png",
+   "file": "media/17_ACR_Weekly_Forecast_2026-11-23_TV_Still.png",
    "seconds": 13,
    "type": "image",
-   "name": "ACR_Weekly_Forecast_2026-11-16_TV_Still.png"
+   "name": "ACR_Weekly_Forecast_2026-11-23_TV_Still.png",
+   "until": "2026-11-29"
   },
   {
    "file": "media/18_acr-follow-us-v6.mp4",
@@ -229,6 +231,12 @@
    "seconds": 20,
    "type": "image",
    "name": "BSG_Counter_Days_2026_TV_Slide_1920x1080.png"
+  },
+  {
+   "file": "media/45_Furnace_TV_Slide.png",
+   "seconds": 20,
+   "type": "image",
+   "name": "Furnace TV Slide.png"
   },
   {
    "file": "media/39_Thanksgiving_Closed_TV_1672x941.png",
