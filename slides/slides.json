@@ -3,10 +3,10 @@
  "fade": 1.0,
  "items": [
   {
-   "file": "media/01_ACR_Mission_Motion_v4_1080p.mp4",
+   "file": "media/46_ACR_80s_Mission_Transition_1920x1080.mp4",
    "seconds": 10,
    "type": "video",
-   "name": "ACR_Mission_Motion_v4_1080p.mp4"
+   "name": "ACR_80s_Mission_Transition_1920x1080.mp4"
   },
   {
    "file": "media/02_ACR_Meme_Parts_House_Run.png",
@@ -107,10 +107,10 @@
    "until": "2026-11-29"
   },
   {
-   "file": "media/18_acr-follow-us-v6.mp4",
-   "seconds": 25,
+   "file": "media/47_ACR_80s_Find_Us_On_Your_Feed_1920x1080.mp4",
+   "seconds": 20,
    "type": "video",
-   "name": "acr-follow-us-v6.mp4"
+   "name": "ACR_80s_Find_Us_On_Your_Feed_1920x1080.mp4"
   },
   {
    "file": "media/19_ACR_Milwaukee_TV_1_All_Deals_1920x1080.png",
