@@ -45,6 +45,12 @@
    "name": "ACR_Milwaukee_TV_Long_Loop_1920x1080.mp4"
   },
   {
+   "file": "media/48_ACR_80s_Tech_Tip_04_Pump_Oil.mp4",
+   "seconds": 15,
+   "type": "video",
+   "name": "48_ACR_80s_Tech_Tip_04_Pump_Oil.mp4"
+  },
+  {
    "file": "media/08_ACR_Deer_Contest.png",
    "seconds": 20,
    "type": "image",
@@ -161,6 +167,12 @@
    "name": "ACR_Blog_Promo_TV_1920x1080.mp4"
   },
   {
+   "file": "media/49_ACR_80s_Tech_Tip_01_Run_Capacitor.mp4",
+   "seconds": 15,
+   "type": "video",
+   "name": "49_ACR_80s_Tech_Tip_01_Run_Capacitor.mp4"
+  },
+  {
    "file": "media/27_ACR_Streamline_Milwaukee_Promo_1920x1080.mp4",
    "seconds": 25,
    "type": "video",
@@ -239,6 +251,12 @@
    "name": "Furnace TV Slide.png"
   },
   {
+   "file": "media/50_ACR_80s_Tech_Tip_02_Flame_Sensor.mp4",
+   "seconds": 15,
+   "type": "video",
+   "name": "50_ACR_80s_Tech_Tip_02_Flame_Sensor.mp4"
+  },
+  {
    "file": "media/39_Thanksgiving_Closed_TV_1672x941.png",
    "seconds": 15,
    "type": "image",
@@ -267,6 +285,12 @@
    "seconds": 84,
    "type": "video",
    "name": "ACR_Shurtape_HVAC_Tape_Landscape_light.mp4"
+  },
+  {
+   "file": "media/51_ACR_80s_Tech_Tip_03_Aux_Heat.mp4",
+   "seconds": 15,
+   "type": "video",
+   "name": "51_ACR_80s_Tech_Tip_03_Aux_Heat.mp4"
   },
   {
    "file": "media/44_ACR_FrogTape_Flashing_Tape_Landscape_light.mp4",
