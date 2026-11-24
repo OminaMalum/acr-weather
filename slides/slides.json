@@ -206,13 +206,15 @@
    "file": "media/32_Video_88efa417.mp4",
    "seconds": 15,
    "type": "video",
-   "name": "Video_88efa417.mp4"
+   "name": "Video_88efa417.mp4",
+   "off": true
   },
   {
    "file": "media/33_JB_Pump_Days_Nov_2026_Monitor_Slide_1920x1080.png",
    "seconds": 16,
    "type": "image",
-   "name": "JB_Pump_Days_Nov_2026_Monitor_Slide_1920x1080.png"
+   "name": "JB_Pump_Days_Nov_2026_Monitor_Slide_1920x1080.png",
+   "off": true
   },
   {
    "file": "media/34_TV_01_Promo.png",
